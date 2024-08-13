@@ -1,38 +1,50 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.main_container {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  background-image: url("https://images.unsplash.com/photo-1547234935-80c7145ec969?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1474&q=80");
+  background-size: cover;
+  background-position: center;
+  font-family: Arial, sans-serif;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+h1 {
+  color: #ffd700;
+  text-shadow: 2px 2px 4px #000000;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#instructions,
+#scoreDisplay {
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+
+#gameContainer {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.canvas {
+  border: 2px solid gold;
+}
+
+.connectWallet {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: gold;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  color: black;
 }
