@@ -47,4 +47,28 @@ h1 {
   cursor: pointer;
   font-weight: bold;
   color: black;
+  width: 140px;
+}
+
+.payFee {
+  position: absolute;
+  top: 20px;
+  right: 170px;
+  background-color: gold;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  color: black;
+}
+
+.connectWallet:hover {
+  background-color: rgb(231, 135, 10);
+  color: white;
+}
+
+.payFee:hover {
+  background-color: rgb(231, 135, 10);
+  color: white;
 }

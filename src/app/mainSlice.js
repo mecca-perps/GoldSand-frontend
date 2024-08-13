@@ -32,7 +32,6 @@ export const mainSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(connectWallet.fulfilled, (state, action) => {
-      console.log(action.payload);
       state.status = "succeeded";
       if (action.payload === undefined) return;
       state.walletAddress = action.payload;

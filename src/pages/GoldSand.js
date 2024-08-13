@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { connectWallet } from "../app/mainSlice";
 import { Toaster } from "react-hot-toast";
 import { shortenAddress } from "../utils";
+import toast from "react-hot-toast";
 
 import "../App.css";
 
@@ -11,7 +12,7 @@ const GoldSand = () => {
   const canvasRef = useRef(null);
   const scoreRef = useRef(0);
   const [isPaid, setIsPaid] = useState(false);
-  
+
   const walletAddress = useSelector((state) => state.main.walletAddress);
 
   const GAME_WIDTH = 800;
@@ -339,6 +340,11 @@ const GoldSand = () => {
         6
       )} $ETH.`
     );
+    // toast.success(
+    //   `Game Over! You collected ${scoreRef.current.textContent.substring(
+    //     6
+    //   )} $ETH.`
+    // );
     resetGame(ctx);
   };
 
@@ -360,7 +366,7 @@ const GoldSand = () => {
   return (
     <div className="main_container">
       <Toaster
-        position="bottom-right"
+        position="top-center"
         toastOptions={{
           duration: 3000,
           style: {
@@ -394,8 +400,11 @@ const GoldSand = () => {
           Connect Wallet
         </button>
       ) : (
-        <div className="connectWallet">{shortenAddress(walletAddress)}</div>
+        <button className="connectWallet">
+          {shortenAddress(walletAddress)}
+        </button>
       )}
+      <button className="payFee">Pay Fee</button>
     </div>
   );
 };
