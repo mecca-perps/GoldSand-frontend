@@ -363,6 +363,10 @@ const GoldSand = () => {
     dispatch(connectWallet());
   };
 
+  const payFee = () => {
+    
+  };
+
   return (
     <div className="main_container">
       <Toaster
@@ -400,11 +404,15 @@ const GoldSand = () => {
           Connect Wallet
         </button>
       ) : (
-        <button className="connectWallet">
-          {shortenAddress(walletAddress)}
-        </button>
+        <>
+          <button className="payFee" onClick={payFee}>
+            Pay Fee
+          </button>
+          <button className="connectWallet">
+            {shortenAddress(walletAddress)}
+          </button>
+        </>
       )}
-      <button className="payFee">Pay Fee</button>
     </div>
   );
 };
