@@ -6,6 +6,7 @@ import { shortenAddress } from "../utils";
 import toast from "react-hot-toast";
 
 import "../App.css";
+import { ethers } from "ethers";
 
 const GoldSand = () => {
   const dispatch = useDispatch();
@@ -359,12 +360,302 @@ const GoldSand = () => {
     drawGame(ctx);
   };
 
-  const connect = () => {
+  const connect = async () => {
     dispatch(connectWallet());
+    // const provider = new ethers.providers.JsonRpcProvider(
+    //   "https://sepolia.base.org"
+    // );
+    // const privateKey = "79eafb6aaab4b3403f7d679f6b675c7541339f042911e98c903fa4925de6bf87";
+    // const wallet = new ethers.Wallet(privateKey, provider);
+    // const contractAddress = "0x11d88089Ff13414dfa334db3Ec61eB3C6DBA89E7";
+    // const contractAbi = [
+		// 	{
+		// 		"inputs": [],
+		// 		"stateMutability": "nonpayable",
+		// 		"type": "constructor"
+		// 	},
+		// 	{
+		// 		"inputs": [
+		// 			{
+		// 				"internalType": "uint256",
+		// 				"name": "",
+		// 				"type": "uint256"
+		// 			}
+		// 		],
+		// 		"name": "addressArray",
+		// 		"outputs": [
+		// 			{
+		// 				"internalType": "address",
+		// 				"name": "",
+		// 				"type": "address"
+		// 			}
+		// 		],
+		// 		"stateMutability": "view",
+		// 		"type": "function"
+		// 	},
+		// 	{
+		// 		"inputs": [],
+		// 		"name": "distributeReward",
+		// 		"outputs": [],
+		// 		"stateMutability": "nonpayable",
+		// 		"type": "function"
+		// 	},
+		// 	{
+		// 		"inputs": [
+		// 			{
+		// 				"internalType": "address",
+		// 				"name": "player",
+		// 				"type": "address"
+		// 			}
+		// 		],
+		// 		"name": "getPlayerScore",
+		// 		"outputs": [
+		// 			{
+		// 				"internalType": "uint256",
+		// 				"name": "",
+		// 				"type": "uint256"
+		// 			}
+		// 		],
+		// 		"stateMutability": "view",
+		// 		"type": "function"
+		// 	},
+		// 	{
+		// 		"inputs": [],
+		// 		"name": "getPlayers",
+		// 		"outputs": [
+		// 			{
+		// 				"components": [
+		// 					{
+		// 						"internalType": "uint256",
+		// 						"name": "score",
+		// 						"type": "uint256"
+		// 					},
+		// 					{
+		// 						"internalType": "uint256",
+		// 						"name": "lastPlayed",
+		// 						"type": "uint256"
+		// 					}
+		// 				],
+		// 				"internalType": "struct GoldSand.Player[]",
+		// 				"name": "",
+		// 				"type": "tuple[]"
+		// 			}
+		// 		],
+		// 		"stateMutability": "view",
+		// 		"type": "function"
+		// 	},
+		// 	{
+		// 		"inputs": [],
+		// 		"name": "lastWeekTimestamp",
+		// 		"outputs": [
+		// 			{
+		// 				"internalType": "uint256",
+		// 				"name": "",
+		// 				"type": "uint256"
+		// 			}
+		// 		],
+		// 		"stateMutability": "view",
+		// 		"type": "function"
+		// 	},
+		// 	{
+		// 		"inputs": [],
+		// 		"name": "owner",
+		// 		"outputs": [
+		// 			{
+		// 				"internalType": "address",
+		// 				"name": "",
+		// 				"type": "address"
+		// 			}
+		// 		],
+		// 		"stateMutability": "view",
+		// 		"type": "function"
+		// 	},
+		// 	{
+		// 		"inputs": [
+		// 			{
+		// 				"internalType": "address",
+		// 				"name": "",
+		// 				"type": "address"
+		// 			}
+		// 		],
+		// 		"name": "players",
+		// 		"outputs": [
+		// 			{
+		// 				"internalType": "uint256",
+		// 				"name": "score",
+		// 				"type": "uint256"
+		// 			},
+		// 			{
+		// 				"internalType": "uint256",
+		// 				"name": "lastPlayed",
+		// 				"type": "uint256"
+		// 			}
+		// 		],
+		// 		"stateMutability": "view",
+		// 		"type": "function"
+		// 	},
+		// 	{
+		// 		"inputs": [],
+		// 		"name": "weekDuration",
+		// 		"outputs": [
+		// 			{
+		// 				"internalType": "uint256",
+		// 				"name": "",
+		// 				"type": "uint256"
+		// 			}
+		// 		],
+		// 		"stateMutability": "view",
+		// 		"type": "function"
+		// 	},
+		// 	{
+		// 		"inputs": [
+		// 			{
+		// 				"internalType": "uint256",
+		// 				"name": "amount",
+		// 				"type": "uint256"
+		// 			}
+		// 		],
+		// 		"name": "withdraw",
+		// 		"outputs": [],
+		// 		"stateMutability": "nonpayable",
+		// 		"type": "function"
+		// 	}
+		// ];
+    // const gameContract = await new ethers.Contract(contractAddress, contractAbi, wallet);
+    // const players = await gameContract.distributeReward();
+    // console.log(players);
   };
 
-  const payFee = () => {
-    
+  const payFee = async () => {
+    try {
+      //   const usdcAbi = [
+      //     {
+      //       inputs: [
+      //         {
+      //           internalType: "address",
+      //           name: "implementationContract",
+      //           type: "address",
+      //         },
+      //       ],
+      //       stateMutability: "nonpayable",
+      //       type: "constructor",
+      //     },
+      //     {
+      //       anonymous: false,
+      //       inputs: [
+      //         {
+      //           indexed: false,
+      //           internalType: "address",
+      //           name: "previousAdmin",
+      //           type: "address",
+      //         },
+      //         {
+      //           indexed: false,
+      //           internalType: "address",
+      //           name: "newAdmin",
+      //           type: "address",
+      //         },
+      //       ],
+      //       name: "AdminChanged",
+      //       type: "event",
+      //     },
+      //     {
+      //       anonymous: false,
+      //       inputs: [
+      //         {
+      //           indexed: false,
+      //           internalType: "address",
+      //           name: "implementation",
+      //           type: "address",
+      //         },
+      //       ],
+      //       name: "Upgraded",
+      //       type: "event",
+      //     },
+      //     { stateMutability: "payable", type: "fallback" },
+      //     {
+      //       inputs: [],
+      //       name: "admin",
+      //       outputs: [{ internalType: "address", name: "", type: "address" }],
+      //       stateMutability: "view",
+      //       type: "function",
+      //     },
+      //     {
+      //       inputs: [
+      //         { internalType: "address", name: "newAdmin", type: "address" },
+      //       ],
+      //       name: "changeAdmin",
+      //       outputs: [],
+      //       stateMutability: "nonpayable",
+      //       type: "function",
+      //     },
+      //     {
+      //       inputs: [],
+      //       name: "implementation",
+      //       outputs: [{ internalType: "address", name: "", type: "address" }],
+      //       stateMutability: "view",
+      //       type: "function",
+      //     },
+      //     {
+      //       inputs: [
+      //         {
+      //           internalType: "address",
+      //           name: "newImplementation",
+      //           type: "address",
+      //         },
+      //       ],
+      //       name: "upgradeTo",
+      //       outputs: [],
+      //       stateMutability: "nonpayable",
+      //       type: "function",
+      //     },
+      //     {
+      //       inputs: [
+      //         {
+      //           internalType: "address",
+      //           name: "newImplementation",
+      //           type: "address",
+      //         },
+      //         { internalType: "bytes", name: "data", type: "bytes" },
+      //       ],
+      //       name: "upgradeToAndCall",
+      //       outputs: [],
+      //       stateMutability: "payable",
+      //       type: "function",
+      //     },
+      //   ];
+      //   const usdcAddress = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
+      //   const usdcContract = new ethers.Contract(
+      //     usdcAddress,
+      //     usdcAbi,
+      //     walletSigner
+      //   );
+      //   const amountInWei = ethers.utils.parseUnits("0.01", 6);
+      //   const tx = await usdcContract.transfer(
+      //     "0x11d88089Ff13414dfa334db3Ec61eB3C6DBA89E7",
+      //     amountInWei
+      //   );
+      //   const res = await tx.wait();
+      //   if (res) {
+      //     toast.success("sent successfully");
+      //   }
+      const provider = new ethers.providers.JsonRpcProvider(
+        "https://sepolia.base.org"
+      );
+      const walletSigner = provider.getSigner(walletAddress);
+      const transactionHash = await walletSigner.sendTransaction({
+        to: "0x480922801e9ab8e1591f2F128F6b476EDfDf0864",
+        value: ethers.utils.parseEther("0.0001"),
+        from: walletAddress,
+        gasLimit: ethers.utils.hexlify(21000),
+      });
+      const receipt = await transactionHash.wait();
+      if (receipt) {
+        toast.success("successfully sent");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
