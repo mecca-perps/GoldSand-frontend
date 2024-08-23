@@ -65,10 +65,10 @@ const GoldSand = () => {
           gameStarted = true;
           updateGame(ctx);
         }
-        if (!gameStarted) {
-          gameStarted = true;
-          updateGame(ctx);
-        }
+        // if (!gameStarted) {
+        //   gameStarted = true;
+        //   updateGame(ctx);
+        // }
         isFlying = true;
       }
     };
