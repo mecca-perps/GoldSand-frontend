@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { connectWallet } from "../app/mainSlice";
+import { useNavigate } from "react-router-dom";
+import { connectWallet, changeScore } from "../app/mainSlice";
 import { shortenAddress } from "../utils";
 import { CoinbaseWalletSDK } from "@coinbase/wallet-sdk";
 import toast from "react-hot-toast";
@@ -16,20 +17,15 @@ const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 const GoldSand = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const canvasRef = useRef(null);
   const scoreRef = useRef(0);
   const [isPaid, setIsPaid] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const walletAddress = useSelector((state) => state.main.walletAddress);
+  const score = useSelector((state) => state.main.score);
   const walletAddressRef = useRef(walletAddress);
-
-  // const override = {
-  //   position: "absolute",
-  //   top: "50%",
-  //   right: "50%",
-  //   zIndex: 3000,
-  // };
 
   const GAME_WIDTH = 800;
   const GAME_HEIGHT = 400;
@@ -69,10 +65,10 @@ const GoldSand = () => {
           gameStarted = true;
           updateGame(ctx);
         }
-        // if (!gameStarted) {
-        //   gameStarted = true;
-        //   updateGame(ctx);
-        // }
+        if (!gameStarted) {
+          gameStarted = true;
+          updateGame(ctx);
+        }
         isFlying = true;
       }
     };
@@ -286,13 +282,8 @@ const GoldSand = () => {
 
     // Check collisions
     if (checkCollisions()) {
-      //   if (ethCollected > 0) {
-      //     ethCollected--;
-      //     scoreRef.current.textContent = `$ETH: ${ethCollected}`;
-      //   } else {
       gameOver(ctx);
       return;
-      //   }
     }
 
     // Collect coins
@@ -379,6 +370,7 @@ const GoldSand = () => {
     };
     const res = await axios.post(`${SERVER_URL}/calculateScore`, param);
     if (res.data.message === "success") {
+      dispatch(changeScore(res.data.score));
       setIsPaid(false);
       resetGame(ctx);
     }
@@ -456,12 +448,15 @@ const GoldSand = () => {
     }
   };
 
+  const goRanking = () => {
+    navigate("/ranking");
+  };
+
   return (
     <>
       <ClockLoader
         color={"gold"}
         loading={loading}
-        // cssOverride={override}
         size={50}
         aria-label="Loading Spinner"
         data-testid="loader"
@@ -478,8 +473,11 @@ const GoldSand = () => {
           height={GAME_HEIGHT}
         ></canvas>
       </div>
-      <div id="scoreDisplay" ref={scoreRef}>
-        $ETH: 0
+      <div className="scoreContainer">
+        <div className="scoreDisplay" ref={scoreRef}>
+          $ETH: 0
+        </div>
+        <div className="scoreDisplay">Total Score: {score}</div>
       </div>
       {walletAddress === undefined ? (
         <>
@@ -496,6 +494,9 @@ const GoldSand = () => {
         </>
       ) : (
         <>
+          <button className="payFee ranking" onClick={goRanking}>
+            Leaderboard
+          </button>
           <button className="payFee" onClick={payFee}>
             Pay Fee
           </button>

@@ -3,15 +3,15 @@
   padding: 0;
   height: 100vh;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   background-image: url("https://images.unsplash.com/photo-1547234935-80c7145ec969?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1474&q=80");
   background-size: cover;
   background-position: center;
   font-family: Arial, sans-serif;
   color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 h1 {
@@ -20,7 +20,7 @@ h1 {
 }
 
 #instructions,
-#scoreDisplay {
+.scoreDisplay {
   background-color: rgba(0, 0, 0, 0.7);
   padding: 10px;
   border-radius: 5px;
@@ -75,6 +75,10 @@ h1 {
   cursor: pointer;
   font-weight: bold;
   color: black;
+}
+
+.ranking {
+  right: 270px;
 }
 
 .connectWallet:hover {
@@ -162,4 +166,27 @@ h1 {
 .input-container {
   display: flex;
   gap: 5px;
+}
+
+.scoreContainer {
+  display: flex;
+  gap: 5px;
+}
+
+.leaderboard {
+ width: 650px;
+ display: flex;
+ flex-direction: column;
+ gap: 10px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 22px;
+}
+
+.table-header > span {
+  text-align: center;
+  flex: 1;
 }

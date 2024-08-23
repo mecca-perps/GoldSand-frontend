@@ -1,9 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const initialState = {
   walletAddress: undefined,
+  score: 0,
 };
+
+const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 export const connectWallet = createAsyncThunk("connectWallet", async () => {
   let account;
@@ -11,6 +15,21 @@ export const connectWallet = createAsyncThunk("connectWallet", async () => {
     toast.error("Please install coinbase wallet");
     return;
   } else {
+    const chainId = await window.coinbaseWalletExtension.request({
+      method: "eth_chainId",
+    });
+    if (chainId !== "0x2105") {
+      try {
+        await window.coinbaseWalletExtension.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0x2105" }],
+        });
+        toast.success("Changed network to Base");
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
     const accounts = await window.coinbaseWalletExtension.request({
       method: "eth_accounts",
     });
@@ -23,22 +42,34 @@ export const connectWallet = createAsyncThunk("connectWallet", async () => {
       account = accounts[0];
     }
   }
-  return account;
+  const param = {
+    walletAddress: account,
+  };
+  const res = await axios.post(`${SERVER_URL}/getScore`, param);
+  return {
+    score: res.data.score,
+    account,
+  };
 });
 
 export const mainSlice = createSlice({
   name: "main",
   initialState,
-  reducers: {},
+  reducers: {
+    changeScore: (state, action) => {
+      state.score = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(connectWallet.fulfilled, (state, action) => {
       state.status = "succeeded";
       if (action.payload === undefined) return;
-      state.walletAddress = action.payload;
+      state.walletAddress = action.payload.account;
+      state.score = action.payload.score;
     });
   },
 });
 
-// export const { connectWallet } = mainSlice.actions;
+export const { changeScore } = mainSlice.actions;
 
 export default mainSlice.reducer;
