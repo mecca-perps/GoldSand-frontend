@@ -4,17 +4,32 @@ import { connectWallet } from "../app/mainSlice";
 import { shortenAddress } from "../utils";
 import { CoinbaseWalletSDK } from "@coinbase/wallet-sdk";
 import toast from "react-hot-toast";
+import axios from "axios";
+import ClockLoader from "react-spinners/ClockLoader";
 
 import "../App.css";
 import { ethers } from "ethers";
+import { usdcAbi } from "../abi/usdcAbi";
+import { gameAbi } from "../abi/gameAbi";
+
+const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 const GoldSand = () => {
   const dispatch = useDispatch();
   const canvasRef = useRef(null);
   const scoreRef = useRef(0);
   const [isPaid, setIsPaid] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const walletAddress = useSelector((state) => state.main.walletAddress);
+  const walletAddressRef = useRef(walletAddress);
+
+  // const override = {
+  //   position: "absolute",
+  //   top: "50%",
+  //   right: "50%",
+  //   zIndex: 3000,
+  // };
 
   const GAME_WIDTH = 800;
   const GAME_HEIGHT = 400;
@@ -30,6 +45,14 @@ const GoldSand = () => {
   let clouds = [];
   let dragons = [];
   let ethCollected = 0;
+
+  useEffect(() => {
+    dispatch(connectWallet());
+  }, []);
+
+  useEffect(() => {
+    walletAddressRef.current = walletAddress;
+  }, [walletAddress]);
 
   useEffect(() => {
     const ctx = canvasRef.current.getContext("2d");
@@ -349,230 +372,16 @@ const GoldSand = () => {
     );
     gameStarted = false;
 
-    const provider = new ethers.providers.Web3Provider(
-      window.coinbaseWalletExtension
-    );
-    const walletSigner = provider.getSigner(walletAddress);
-    const contractAddress = "0x8F10D74Bdf0F311851BDD021E1411093cD189623";
-    const contractAbi = [
-      {
-        inputs: [],
-        stateMutability: "nonpayable",
-        type: "constructor",
-      },
-      {
-        stateMutability: "payable",
-        type: "fallback",
-      },
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        name: "addressArray",
-        outputs: [
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "score",
-            type: "uint256",
-          },
-        ],
-        name: "calculateScore",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "distributeReward",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "getPlayers",
-        outputs: [
-          {
-            components: [
-              {
-                internalType: "uint256",
-                name: "score",
-                type: "uint256",
-              },
-              {
-                internalType: "uint256",
-                name: "lastPlayed",
-                type: "uint256",
-              },
-            ],
-            internalType: "struct GoldSand.Player[]",
-            name: "",
-            type: "tuple[]",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "getWinners",
-        outputs: [
-          {
-            components: [
-              {
-                internalType: "address",
-                name: "walletAddress",
-                type: "address",
-              },
-              {
-                internalType: "uint256",
-                name: "timestamp",
-                type: "uint256",
-              },
-            ],
-            internalType: "struct GoldSand.Winner[]",
-            name: "",
-            type: "tuple[]",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "lastWeekTimestamp",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "owner",
-        outputs: [
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "address",
-            name: "",
-            type: "address",
-          },
-        ],
-        name: "players",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "score",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "lastPlayed",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [],
-        name: "weekDuration",
-        outputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "",
-            type: "uint256",
-          },
-        ],
-        name: "winnerArray",
-        outputs: [
-          {
-            internalType: "address",
-            name: "walletAddress",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "timestamp",
-            type: "uint256",
-          },
-        ],
-        stateMutability: "view",
-        type: "function",
-      },
-      {
-        inputs: [
-          {
-            internalType: "uint256",
-            name: "amount",
-            type: "uint256",
-          },
-        ],
-        name: "withdraw",
-        outputs: [],
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-      {
-        stateMutability: "payable",
-        type: "receive",
-      },
-    ];
-    const gameContract = await new ethers.Contract(
-      contractAddress,
-      contractAbi,
-      walletSigner
-    );
-    try {
-      const tx = await gameContract.calculateScore(ethCollected);
-      const res = await tx.wait();
-    } catch (error) {
-      console.log(error);
+    const score = ethCollected;
+    const param = {
+      score,
+      walletAddress: walletAddressRef.current,
+    };
+    const res = await axios.post(`${SERVER_URL}/calculateScore`, param);
+    if (res.data.message === "success") {
+      setIsPaid(false);
+      resetGame(ctx);
     }
-    const res = await gameContract.getPlayers();
-
-    setIsPaid(false);
-    resetGame(ctx);
   };
 
   const resetGame = (ctx) => {
@@ -611,15 +420,36 @@ const GoldSand = () => {
         window.coinbaseWalletExtension
       );
       const walletSigner = await provider.getSigner(walletAddress);
-      const transactionHash = await walletSigner.sendTransaction({
-        to: "0x8F10D74Bdf0F311851BDD021E1411093cD189623",
-        value: ethers.utils.parseEther("0.0001"),
-        from: walletAddress,
-      });
-      const receipt = await transactionHash.wait();
+      const usdcContractAddress = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
+      const gameContractAddress = process.env.REACT_APP_GAME_CONTRACT_ADDRESS;
+      const amount = ethers.utils.parseUnits("1", 6);
+      const usdcContract = new ethers.Contract(
+        usdcContractAddress,
+        usdcAbi,
+        walletSigner
+      );
+      setLoading(true);
+      const tx = await usdcContract.approve(gameContractAddress, amount);
+      const receipt = await tx.wait();
       if (receipt) {
-        setIsPaid(true);
-        toast.success("successfully sent");
+        setLoading(false);
+        const gameContract = new ethers.Contract(
+          gameContractAddress,
+          gameAbi,
+          walletSigner
+        );
+        try {
+          setLoading(true);
+          const res = await gameContract.depositUSDC(amount);
+          if (res) {
+            setLoading(false);
+            setIsPaid(true);
+            toast.success("successfully sent");
+          }
+        } catch (error) {
+          toast.error("transaction failed");
+          console.log(error);
+        }
       }
     } catch (error) {
       console.log(error);
@@ -628,6 +458,14 @@ const GoldSand = () => {
 
   return (
     <>
+      <ClockLoader
+        color={"gold"}
+        loading={loading}
+        // cssOverride={override}
+        size={50}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
       <h1>GoldSand Rush</h1>
       <div id="instructions">
         Press Space to avoid snakes and dragons. Collect ETH

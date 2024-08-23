@@ -5,11 +5,18 @@ import { ethers } from "ethers";
 import toast from "react-hot-toast";
 import { connectWallet } from "../app/mainSlice";
 import { shortenAddress } from "../utils";
+import RotateLoader from "react-spinners/RotateLoader";
+import axios from "axios";
+import { gameAbi } from "../abi/gameAbi";
+import { usdcAbi } from "../abi/usdcAbi";
+
+const SERVER_URL = process.env.REACT_APP_SERVER_URL;
 
 const Admin = () => {
   const dispatch = useDispatch();
   const walletAddress = useSelector((state) => state.main.walletAddress);
   const [balance, setBalance] = useState(0);
+  const [usdcBalance, setUsdcBalance] = useState(0);
   const [year, setYear] = useState(0);
   const [month, setMonth] = useState("");
   const [day, setDay] = useState(0);
@@ -18,6 +25,12 @@ const Admin = () => {
   const [seconds, setSeconds] = useState(0);
   const [gameContract, setGameContract] = useState(null);
   const [amount, setAmount] = useState(0);
+  const [usdcAmount, setUsdcAmount] = useState(0);
+  const [isAuth, setIsAuth] = useState(false);
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const defaultPassword = process.env.REACT_APP_DEFAULT_PASSWORD;
 
   const monthNames = [
     "January",
@@ -36,224 +49,26 @@ const Admin = () => {
 
   useEffect(() => {
     const init = async () => {
-      dispatch(connectWallet);
+      dispatch(connectWallet());
       const provider = new ethers.providers.Web3Provider(
         window.coinbaseWalletExtension
       );
-      const bal = await provider.getBalance(
-        "0x8F10D74Bdf0F311851BDD021E1411093cD189623"
-      );
+      const contractAddress = process.env.REACT_APP_GAME_CONTRACT_ADDRESS;
+      const bal = await provider.getBalance(contractAddress);
       const balanceInEther = ethers.utils.formatEther(bal);
-      setBalance(balanceInEther);
       const walletSigner = provider.getSigner(walletAddress);
-      const contractAddress = "0x8F10D74Bdf0F311851BDD021E1411093cD189623";
-      const contractAbi = [
-        {
-          inputs: [],
-          stateMutability: "nonpayable",
-          type: "constructor",
-        },
-        {
-          stateMutability: "payable",
-          type: "fallback",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          name: "addressArray",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "score",
-              type: "uint256",
-            },
-          ],
-          name: "calculateScore",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "distributeReward",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getPlayers",
-          outputs: [
-            {
-              components: [
-                {
-                  internalType: "uint256",
-                  name: "score",
-                  type: "uint256",
-                },
-                {
-                  internalType: "uint256",
-                  name: "lastPlayed",
-                  type: "uint256",
-                },
-              ],
-              internalType: "struct GoldSand.Player[]",
-              name: "",
-              type: "tuple[]",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "getWinners",
-          outputs: [
-            {
-              components: [
-                {
-                  internalType: "address",
-                  name: "walletAddress",
-                  type: "address",
-                },
-                {
-                  internalType: "uint256",
-                  name: "timestamp",
-                  type: "uint256",
-                },
-              ],
-              internalType: "struct GoldSand.Winner[]",
-              name: "",
-              type: "tuple[]",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "lastWeekTimestamp",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "owner",
-          outputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "address",
-              name: "",
-              type: "address",
-            },
-          ],
-          name: "players",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "score",
-              type: "uint256",
-            },
-            {
-              internalType: "uint256",
-              name: "lastPlayed",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [],
-          name: "weekDuration",
-          outputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "",
-              type: "uint256",
-            },
-          ],
-          name: "winnerArray",
-          outputs: [
-            {
-              internalType: "address",
-              name: "walletAddress",
-              type: "address",
-            },
-            {
-              internalType: "uint256",
-              name: "timestamp",
-              type: "uint256",
-            },
-          ],
-          stateMutability: "view",
-          type: "function",
-        },
-        {
-          inputs: [
-            {
-              internalType: "uint256",
-              name: "amount",
-              type: "uint256",
-            },
-          ],
-          name: "withdraw",
-          outputs: [],
-          stateMutability: "nonpayable",
-          type: "function",
-        },
-        {
-          stateMutability: "payable",
-          type: "receive",
-        },
-      ];
+      const usdcContractAddress = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
+      const usdcContract = new ethers.Contract(
+        usdcContractAddress,
+        usdcAbi,
+        walletSigner
+      );
+      setBalance(balanceInEther);
+      const usdcBal = await usdcContract.balanceOf(contractAddress);
+      setUsdcBalance(ethers.utils.formatUnits(usdcBal, 6));
       const contract = await new ethers.Contract(
         contractAddress,
-        contractAbi,
+        gameAbi,
         walletSigner
       );
       setGameContract(contract);
@@ -280,10 +95,25 @@ const Admin = () => {
     }
   };
 
+  const withdrawUSDC = async () => {
+    try {
+      const res = await gameContract.withdrawUSDC(
+        ethers.utils.parseUnits(usdcAmount.toString(), 6)
+      );
+      if (res) {
+        toast.success("withdrawl successful");
+      }
+    } catch (error) {}
+  };
+
   const distribute = async () => {
     try {
-      await gameContract.distributeReward();
-      toast.success("Distribution was successful");
+      const res = await axios.get(`${SERVER_URL}/distributeReward`);
+      if (res.data.message === "success") {
+        toast.success("Distribution was successful");
+      } else {
+        toast.error("Distribution failed");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -291,6 +121,50 @@ const Admin = () => {
 
   const connect = async () => {
     dispatch(connectWallet());
+  };
+
+  const checkAuth = async () => {
+    if (password === defaultPassword) {
+      setIsAuth(true);
+      toast.success("success");
+    } else {
+      toast.error("wrong password");
+      setPassword("");
+    }
+  };
+
+  const handleKeyDown = async (event) => {
+    if (event.keyCode === 13) {
+      checkAuth();
+    }
+  };
+
+  if (!isAuth) {
+    return (
+      <div className="admin-container">
+        <div className="pwd-contanier">
+          <span>Input password to go to admin page</span>
+          <div className="input-container">
+            <input
+              className="pwd-input"
+              type="password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+              onKeyDown={handleKeyDown}
+            />
+            <button
+              className="admin-btn"
+              style={{ width: "140px" }}
+              onClick={checkAuth}
+            >
+              Login
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -312,13 +186,14 @@ const Admin = () => {
           </button>
         </>
       )}
-      <h1>Contract Balance</h1>
-      <div>
-        {balance} <span className="balance">ETH</span>
-      </div>
       <h1>Last distribution date</h1>
       <div>
         {month} {day}, {year} , at {hours}:{minutes}:{seconds}
+      </div>
+      <h1>Contract Balance</h1>
+      <div>
+        <span className="balance">{balance}</span> ETH,{" "}
+        <span className="balance">{usdcBalance}</span> USDC
       </div>
       <div className="withdraw-container">
         <input
@@ -326,8 +201,18 @@ const Admin = () => {
             setAmount(e.target.value);
           }}
         />
-        <button className="admin-btn" onClick={withdraw}>
-          Withdraw
+        <button className="admin-btn withdraw" onClick={withdraw}>
+          Withdraw ETH
+        </button>
+      </div>
+      <div className="withdraw-container">
+        <input
+          onChange={(e) => {
+            setUsdcAmount(e.target.value);
+          }}
+        />
+        <button className="admin-btn withdraw" onClick={withdrawUSDC}>
+          Withdraw USDC
         </button>
       </div>
       <div>
