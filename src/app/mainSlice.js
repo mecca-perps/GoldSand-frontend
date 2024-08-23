@@ -46,10 +46,17 @@ export const connectWallet = createAsyncThunk("connectWallet", async () => {
     walletAddress: account,
   };
   const res = await axios.post(`${SERVER_URL}/getScore`, param);
-  return {
-    score: res.data.score,
-    account,
-  };
+  if (res.data.message === "success") {
+    return {
+      score: res.data.score,
+      account,
+    };
+  } else {
+    return {
+      score: 0,
+      account,
+    };
+  }
 });
 
 export const mainSlice = createSlice({

@@ -81,6 +81,10 @@ h1 {
   right: 270px;
 }
 
+.rule {
+  right: 400px;
+}
+
 .connectWallet:hover {
   background-color: rgb(231, 135, 10);
   color: white;
@@ -174,10 +178,10 @@ h1 {
 }
 
 .leaderboard {
- width: 650px;
- display: flex;
- flex-direction: column;
- gap: 10px;
+  width: 650px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .table-header {
@@ -189,4 +193,22 @@ h1 {
 .table-header > span {
   text-align: center;
   flex: 1;
+}
+
+h2 {
+  margin: 0;
+}
+
+.rule-container {
+  width: 800px;
+  font-size: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  letter-spacing: 1px;
+}
+
+.rule-container > div > span {
+  color: #ffd700;
+  text-shadow: 2px 2px 4px #000000;
 }

@@ -29,6 +29,7 @@ const Admin = () => {
   const [isAuth, setIsAuth] = useState(false);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [rewardAmount, setRewardAmount] = useState(0);
 
   const defaultPassword = process.env.REACT_APP_DEFAULT_PASSWORD;
 
@@ -72,28 +73,19 @@ const Admin = () => {
         walletSigner
       );
       setGameContract(contract);
-      const time = await contract.lastWeekTimestamp();
-      const date = new Date(time.toNumber() * 1000);
-      setYear(date.getFullYear());
-      setMonth(monthNames[date.getMonth()]);
-      setDay(date.getDate());
-      setHours(date.getHours());
-      setMinutes(date.getMinutes());
-      setSeconds(date.getSeconds());
+      // const time = await contract.lastWeekTimestamp();
+      // const date = new Date(time.toNumber() * 1000);
+      // setYear(date.getFullYear());
+      // setMonth(monthNames[date.getMonth()]);
+      // setDay(date.getDate());
+      // setHours(date.getHours());
+      // setMinutes(date.getMinutes());
+      // setSeconds(date.getSeconds());
       return () => {};
     };
 
     init();
   }, []);
-
-  const withdraw = async () => {
-    try {
-      await gameContract.withdraw(ethers.utils.parseEther(amount.toString()));
-      toast.success("Withdrawal was successful");
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const withdrawUSDC = async () => {
     try {
@@ -108,7 +100,10 @@ const Admin = () => {
 
   const distribute = async () => {
     try {
-      const res = await axios.get(`${SERVER_URL}/distributeReward`);
+      const param = {
+        rewardAmount,
+      };
+      const res = await axios.post(`${SERVER_URL}/distributeReward`, param);
       if (res.data.message === "success") {
         toast.success("Distribution was successful");
       } else {
@@ -186,24 +181,14 @@ const Admin = () => {
           </button>
         </>
       )}
-      <h1>Last distribution date</h1>
+      {/* <h1>Last distribution date</h1>
       <div>
         {month} {day}, {year} , at {hours}:{minutes}:{seconds}
-      </div>
+      </div> */}
       <h1>Contract Balance</h1>
       <div>
         <span className="balance">{balance}</span> ETH,{" "}
         <span className="balance">{usdcBalance}</span> USDC
-      </div>
-      <div className="withdraw-container">
-        <input
-          onChange={(e) => {
-            setAmount(e.target.value);
-          }}
-        />
-        <button className="admin-btn withdraw" onClick={withdraw}>
-          Withdraw ETH
-        </button>
       </div>
       <div className="withdraw-container">
         <input
@@ -215,7 +200,12 @@ const Admin = () => {
           Withdraw USDC
         </button>
       </div>
-      <div>
+      <div className="withdraw-container">
+        <input
+          onChange={(e) => {
+            setRewardAmount(e.target.value);
+          }}
+        />
         <button className="admin-btn" onClick={distribute}>
           Distribute Reward
         </button>

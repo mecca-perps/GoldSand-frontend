@@ -65,10 +65,6 @@ const GoldSand = () => {
           gameStarted = true;
           updateGame(ctx);
         }
-        // if (!gameStarted) {
-        //   gameStarted = true;
-        //   updateGame(ctx);
-        // }
         isFlying = true;
       }
     };
@@ -452,6 +448,10 @@ const GoldSand = () => {
     navigate("/ranking");
   };
 
+  const goRule = () => {
+    navigate("/rule");
+  };
+
   return (
     <>
       <ClockLoader
@@ -462,6 +462,7 @@ const GoldSand = () => {
         data-testid="loader"
       />
       <h1>GoldSand Rush</h1>
+      <h2>" Win Your Way to Mecca "</h2>
       <div id="instructions">
         Press Space to avoid snakes and dragons. Collect ETH
       </div>
@@ -494,6 +495,9 @@ const GoldSand = () => {
         </>
       ) : (
         <>
+          <button className="payFee rule" onClick={goRule}>
+            Rule
+          </button>
           <button className="payFee ranking" onClick={goRanking}>
             Leaderboard
           </button>
